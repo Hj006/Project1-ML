@@ -69,21 +69,84 @@ model.fit(X_train, y_train)
 predictions = model.predict(X_test)
 ```
 
+### `generate_negative_data`
+
+The `generate_negative_data` function generates synthetic data with two distinct patterns: 
+1. The first half of the features has a **monotonic increasing trend**.
+2. The second half of the features has a **linear decreasing trend** (i.e., negative slope).
+
+This function can be useful for testing model's ability in negative correlations data.
+
+#### Parameters:
+- **`range_x`** (_tuple_): The range of feature values (min, max).
+- **`noise_scale`** (_float_): Standard deviation of the Gaussian noise added to the data.
+- **`size`** (_int_): Number of samples in the dataset.
+- **`num_features`** (_int_): Total number of features (half with increasing trend, half with decreasing trend).
+- **`seed`** (_int_): Random seed for reproducibility.
+
+#### Returns:
+- **`X`** (_numpy array_): Generated feature matrix with both increasing and decreasing trends.
+- **`y`** (_numpy array_): Target values with contributions from the features and added noise.
+
+#### Example Usage:
+
+```python
+from generate_negative_regression_data import generate_negative_data
+
+# Generate negative slope data
+X, y = generate_negative_data(range_x=(0, 10), noise_scale=1.0, size=100, num_features=6, seed=42)
+```
+
+---
+
+### `generate_rotated_positive_data`
+
+The `generate_rotated_positive_data` function generates synthetic data with two patterns:
+1. The first half of the features follows a **monotonic increasing trend**.
+2. The second half exhibits a **wavy (S-shaped) pattern**, adjusted by a rotation matrix to create a slanted shape.
+
+This function generates more complex data to test model's ability.
+
+#### Parameters:
+- **`range_x`** (_tuple_): Specifies the range of feature values (min, max).
+- **`noise_scale`** (_float_): Standard deviation of the Gaussian noise added to the data.
+- **`size`** (_int_): Number of samples in the dataset.
+- **`num_features`** (_int_): Total number of features (half with increasing trend, half with a wavy pattern).
+- **`seed`** (_int_): Random seed for reproducibility.
+- **`rotation_angle`** (_float_, default=45): Angle (in degrees) to rotate the wavy pattern, introducing a slanted S-shape.
+- **`mode`** (_int_, default=0): Determines the scaling factors for the feature values.
+
+#### Returns:
+- **`X`** (_numpy array_): Generated feature matrix with increasing trends and rotated S-shaped patterns.
+- **`y`** (_numpy array_): Target values influenced by the features and noise.
+
+#### Example Usage:
+
+```python
+from generate_positive_regression_data import generate_rotated_positive_data
+
+# Generate positive data with rotation and S-shaped curves
+X, y = generate_rotated_positive_data(range_x=(0, 10), noise_scale=1.0, size=100, num_features=6, seed=42, rotation_angle=45, mode=0)
+```
+
+---
+
+
 # 1. Linear regression with ElasticNet regularization (combination of L2 And L1 regularization)
 
-# Q1.What does the model you have implemented do and when should it be used?
+## Q1.What does the model you have implemented do and when should it be used?
 
-# ElasticNetModel Overview
+### ElasticNetModel Overview
 
 The model we've crafted, called **ElasticNetModel**, is an implementation of Elastic Net regression. What makes it special is that it not only uses MSE as the loss function, but also combines L1 (Lasso) and L2 (Ridge) regularization techniques. Here's a clearer view on how we implement this model:
 
-## Loss Function
+### Loss Function
 
 The loss function consists of the MSE loss, L1 loss, and L2 loss. The loss function is shown as follows:
 
 $\text{Loss} = \frac{1}{n} \sum_{i=1}^n (y_i - \hat{y}_i)^2 + \lambda_1 \sum_{j=1}^m |w_j| + \lambda_2 \sum_{j=1}^m w_j^2$
 
-## Then use the gradient descent algorithm to calculate the gradient of the loss function and then update.
+### Then use the gradient descent algorithm to calculate the gradient of the loss function and then update.
 
 - **Gradient calculation results of MSE:**:
 
@@ -128,9 +191,9 @@ In summary, our model implements hybrid regularization by combining L1 and L2 pe
 
 The **ElasticNetModel** isn’t just about making predictions; it’s also about deeply understanding the data. It’s a powerful tool for anyone who needs to tackle complex data sets and derive meaningful conclusions, not just numbers. This model’s ability to simplify while handling complex relationships makes it invaluable for researchers and analysts who regularly face challenging modeling situations.
 
-# Q2.How did you test your model to determine if it is working reasonably correctly?
+## Q2.How did you test your model to determine if it is working reasonably correctly?
 
-## Model Testing and Validation Strategy
+### Model Testing and Validation Strategy
 
 To ensure our model is both robust and accurate, we’ve put a thorough testing and validation strategy into play. Let’s walk through each step of this strategy to see how it contributes to a full evaluation of the model’s performance:
 
@@ -168,15 +231,15 @@ To ensure our model is both robust and accurate, we’ve put a thorough testing 
 - **Ongoing Process**: Based on what we learn from the visual data and other metrics, we continuously refine the model. This might mean tweaking the model’s settings to better align predictions with actual results, especially where we notice gaps.
 - **Why Keep At It**: These refinements help the model adapt to the subtleties of new data, ensuring it stays relevant and effective. This ongoing cycle of feedback and improvement is vital for the model to remain at the top of its game as it encounters new challenges.
 
-#### Insights from Graphs:
+### Insights from Graphs:
 
 Observing how “Feature 2 vs. Target” shows a tighter cluster around the diagonal than “Feature 6 vs. Target” suggests Feature 2 is being handled more precisely. This might lead us to look into whether Feature 6 needs more preprocessing or whether the model should employ advanced feature engineering strategies to better capture complex data patterns.
 
 By weaving together these detailed testing methods, we not only affirm that the model is theoretically sound but also ensure it’s equipped to perform reliably in a range of real-world applications. This rigorous validation and refinement process is crucial for building top-quality predictive models that can rise to new challenges and deliver dependable results.
 
-# Q3.What parameters have you exposed to users of your implementation in order to tune performance? (Also perhaps provide some basic usage examples.)
+## Q3.What parameters have you exposed to users of your implementation in order to tune performance? (Also perhaps provide some basic usage examples.)
 
-## Model Optimization Parameters
+### Model Optimization Parameters
 
 To optimize the performance of our model, we’ve provided several adjustable parameters. Here’s a breakdown of each parameter, explaining their function and how adjustments can enhance model performance:
 
@@ -212,9 +275,9 @@ To optimize the performance of our model, we’ve provided several adjustable pa
 
 By fine-tuning these parameters, we can adjust our model to better fit the specific characteristics of the data and the demands of the task at hand, striking an optimal balance between accuracy, computational efficiency, and model simplicity.
 
-# Q4.Are there specific inputs that your implementation has trouble with? Given more time, could you work around these or is it fundamental?
+## Q4.Are there specific inputs that your implementation has trouble with? Given more time, could you work around these or is it fundamental?
 
-## Specific Inputs That May Challenge the ElasticNet Model
+### Specific Inputs That May Challenge the ElasticNet Model
 
 ### 1. Highly Nonlinear Data
 
